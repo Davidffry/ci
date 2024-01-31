@@ -7,7 +7,7 @@ variables:
   BUILDER_IMAGE: dock.mau.dev/tulir/gomuks-build-docker
   BINARY_NAME: mautrix-$CI_PROJECT_NAME
 
-.build: &build
+.build: 
   stage: build
   cache:
     paths:
@@ -26,7 +26,7 @@ variables:
     - $BINARY_NAME
     - example-config.yaml
 
-.build-docker: &build-docker
+.build-docker:
   image: docker:stable
   stage: build docker
   before_script:
@@ -38,7 +38,7 @@ variables:
   after_script:
   - docker rmi $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA-$DOCKER_ARCH
 
-.build-macos: &build-macos
+.build-macos:
   stage: build
   variables:
     MACOSX_DEPLOYMENT_TARGET: "11.0"
@@ -62,34 +62,34 @@ variables:
     - libolm.3.dylib
 
 build amd64:
-  <<: *build
+  extends: .build
   image: $BUILDER_IMAGE:linux-amd64
   tags:
   - linux
   - amd64
 
 build arm64:
-  <<: *build
+  extends: .build
   image: $BUILDER_IMAGE:linux-arm64-native
   tags:
   - linux
   - arm64
 
 build arm:
-  <<: *build
+  extends: .build
   image: $BUILDER_IMAGE:linux-arm
   tags:
   - linux
   - amd64
 
 build macos arm64:
-  <<: *build-macos
+  extends: .build-macos
   tags:
   - macos
   - arm64
 
 build docker amd64:
-  <<: *build-docker
+  extends: .build-docker
   tags:
   - linux
   - amd64
@@ -104,7 +104,7 @@ build docker amd64:
   - docker rmi $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA-$DOCKER_ARCH
 
 build docker arm64:
-  <<: *build-docker
+  extends: .build-docker
   tags:
   - linux
   - arm64
